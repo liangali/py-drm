@@ -13,9 +13,11 @@
 #include "drm.h"
 #include "i915_drm.h"
 
+#include "def.h"
+
 using namespace std;
 
-int err = 0;
+int ret = 0;
 int fd = 0;
 
 void init()
@@ -33,7 +35,7 @@ void close()
 int query_version()
 {
     drm_version_t version = {};
-    if (ioctl(fd, DRM_IOCTL_VERSION, &version)) {
+    if (ret = ioctl(fd, DRM_IOCTL_VERSION, &version)) {
         printf("ERROR: ioctl DRM_IOCTL_VERSION failed\n");
         return -1;
     }
@@ -44,7 +46,7 @@ int query_version()
     version.name = vername.data();
     version.date = verdate.data();
     version.desc = verdesc.data();
-    if (ioctl(fd, DRM_IOCTL_VERSION, &version)) {
+    if (ret = ioctl(fd, DRM_IOCTL_VERSION, &version)) {
         printf("ERROR: ioctl DRM_IOCTL_VERSION failed\n");
         return -1;
     }
@@ -56,11 +58,29 @@ int query_version()
     return 0;
 }
 
+int get_param()
+{
+    int data = 0;
+    for (auto p: mapGetParam)
+    {
+        struct drm_i915_getparam gp = {.param = p.second, .value = &data};
+        if (ret = ioctl(fd, DRM_IOCTL_I915_GETPARAM, &gp)) {
+            printf("ERROR: DRM_IOCTL_I915_GETPARAM failed, ret= %d, param = %s(%d)\n", ret, p.first.c_str(), p.second);
+            continue;
+            //return -1;
+        }
+        printf("%s = %d\n", p.first.c_str(), *gp.value);
+    }
+    return 0;
+}
+
 int main()
 {
     init();
 
     query_version();
+
+    get_param();
 
     close();
     return 0;
