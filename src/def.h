@@ -43,3 +43,14 @@ static std::map<std::string, int> mapGetParam = {
     {"I915_PARAM_MIN_EU_IN_POOL       ", 39},
     {"I915_PARAM_MMAP_GTT_VERSION     ", 40},
 };
+
+static std::map<std::string, int> mapContextParam = {
+    {"I915_CONTEXT_PARAM_BAN_PERIOD        ", 0x1}, 
+    {"I915_CONTEXT_PARAM_NO_ZEROMAP        ", 0x2}, 
+    {"I915_CONTEXT_PARAM_GTT_SIZE          ", 0x3}, 
+    {"I915_CONTEXT_PARAM_NO_ERROR_CAPTURE  ", 0x4}, 
+    {"I915_CONTEXT_PARAM_BANNABLE          ", 0x5}, 
+    {"I915_CONTEXT_PARAM_PRIORITY          ", 0x6}, 
+    {"I915_CONTEXT_PARAM_SSEU              ", 0x7}, 
+    {"I915_CONTEXT_PARAM_RECOVERABLE       ", 0x8}, 
+};

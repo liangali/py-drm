@@ -60,17 +60,37 @@ int query_version()
 
 int get_param()
 {
-    int data = 0;
+    printf("\nINFO: DRM_IOCTL_I915_GETPARAM \n");
     for (auto p: mapGetParam)
     {
+        int data = 0;
         struct drm_i915_getparam gp = {.param = p.second, .value = &data};
         if (ret = ioctl(fd, DRM_IOCTL_I915_GETPARAM, &gp)) {
             printf("ERROR: DRM_IOCTL_I915_GETPARAM failed, ret= %d, param = %s(%d)\n", ret, p.first.c_str(), p.second);
             continue;
-            //return -1;
         }
         printf("%s = %d\n", p.first.c_str(), *gp.value);
     }
+
+    printf("\nINFO: DRM_IOCTL_I915_GEM_GET_APERTURE \n");
+    drm_i915_gem_get_aperture aperture = {};
+    if(ret = ioctl(fd, DRM_IOCTL_I915_GEM_GET_APERTURE,  &aperture)) {
+        printf("ERROR: DRM_IOCTL_I915_GEM_GET_APERTURE failed\n");
+    }
+    printf("INFO: aper_size = %lld, aper_available_size = %lld\n", aperture.aper_size, aperture.aper_available_size);
+
+    printf("\nINFO: DRM_IOCTL_I915_GEM_CONTEXT_GETPARAM \n");
+    for (auto p: mapContextParam)
+    {
+        uint64_t data = 0;
+        drm_i915_gem_context_param cp = {.param = p.second};
+        if (ret = ioctl(fd, DRM_IOCTL_I915_GEM_CONTEXT_GETPARAM, &cp)) {
+            printf("ERROR: DRM_IOCTL_I915_GEM_CONTEXT_GETPARAM failed, ret= %d, param = %s(%d)\n", ret, p.first.c_str(), p.second);
+            continue;
+        }
+        printf("%s = %lld\n", p.first.c_str(), cp.value);
+    }
+
     return 0;
 }
 
