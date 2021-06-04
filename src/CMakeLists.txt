@@ -11,6 +11,9 @@ project(submit)
 add_executable(submit submit.cpp)
 target_link_libraries(submit rt)
 
+project(memwrite)
+add_executable(memwrite memwrite.cpp)
+target_link_libraries(memwrite rt)
 
 project(pydrm)
 if(DEFINED ENV{PYTHON_INCLUDE} AND DEFINED ENV{PYBIND11_INCLUDE})
