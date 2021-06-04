@@ -94,13 +94,37 @@ int get_param()
     return 0;
 }
 
+int query_engine()
+{
+    drm_i915_query_item query_item = {};
+    query_item.query_id = DRM_I915_QUERY_ENGINE_INFO;
+    query_item.length = 0;
+
+    drm_i915_query query = {};
+    query.num_items = 1;
+    query.items_ptr = (uintptr_t)&query_item;
+
+    if (ret = ioctl(fd, DRM_IOCTL_I915_QUERY, &query)) {
+        printf("ERROR: DRM_IOCTL_I915_GEM_GET_APERTURE failed\n");
+        return -1;
+    } 
+    printf("INFO: engine_count = %d\n", query_item.length);
+
+    vector<i915_engine_class_instance> engine_map(100, {0});
+    query_item = {};
+    query = {};
+
+
+    return 0;
+}
+
 int main()
 {
     init();
 
     query_version();
-
     get_param();
+    query_engine();
 
     close();
     return 0;
