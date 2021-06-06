@@ -108,13 +108,30 @@ int query_engine()
         printf("ERROR: DRM_IOCTL_I915_GEM_GET_APERTURE failed\n");
         return -1;
     } 
-    printf("INFO: engine_count = %d\n", query_item.length);
+    printf("INFO: engine info length = %d\n", query_item.length);
+    int len = query_item.length;
 
-    vector<i915_engine_class_instance> engine_map(100, {0});
+    vector<char> engine_info(len, 0);
     query_item = {};
-    query = {};
+    query_item.query_id = DRM_I915_QUERY_ENGINE_INFO;
+    query_item.length = len;
+    query_item.data_ptr = (uintptr_t)engine_info.data();
+    query.flags = 0;
+    query.num_items = 1;
+    query.items_ptr = (uintptr_t)&query_item;
 
+    if (ret = ioctl(fd, DRM_IOCTL_I915_QUERY, &query)) {
+        printf("ERROR: DRM_IOCTL_I915_GEM_GET_APERTURE failed\n");
+        return -1;
+    } 
 
+    drm_i915_query_engine_info* info = (drm_i915_query_engine_info*)engine_info.data();
+    for (size_t i = 0; i < info->num_engines; i++)
+    {
+        drm_i915_engine_info *ei = (drm_i915_engine_info *)&info->engines[i];
+        printf("INFO: i = %d, engine_class = %d, engine_instance = %d\n", i, ei->engine.engine_class, ei->engine.engine_instance);
+    }
+    
     return 0;
 }
 
