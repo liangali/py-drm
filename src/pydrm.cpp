@@ -21,6 +21,9 @@
 #include "drm.h"
 #include "i915_drm.h"
 
+#include "def.h"
+
+using namespace std;
 namespace py = pybind11;
 
 int ret = 0;
@@ -52,9 +55,9 @@ int drmCreateGemObject(uint64_t size)
     }
 }
 
-std::vector<std::string>  drmQueryEngineInfo()
+map<string, vector<string>> drmQueryEngineInfo()
 {
-    std::vector<std::string> ei_list;
+    map<string, vector<string>> ei_list;
 
     drm_i915_query_item query_item = {};
     query_item.query_id = DRM_I915_QUERY_ENGINE_INFO;
@@ -70,7 +73,7 @@ std::vector<std::string>  drmQueryEngineInfo()
     } 
     int len = query_item.length;
 
-    std::vector<char> engine_info(len, 0);
+    vector<char> engine_info(len, 0);
     query_item = {};
     query_item.query_id = DRM_I915_QUERY_ENGINE_INFO;
     query_item.length = len;
@@ -88,28 +91,21 @@ std::vector<std::string>  drmQueryEngineInfo()
     for (size_t i = 0; i < info->num_engines; i++)
     {
         drm_i915_engine_info *ei = (drm_i915_engine_info *)&info->engines[i];
-        std::string str_info;
-        switch (ei->engine.engine_class)
-        {
-        case 0:
-            str_info = "RENDER";
-            break;
-        case 1:
-            str_info = "BLT";
-            break;
-        case 2:
-            str_info = "VCS";
-            break;
-        case 3:
-            str_info = "VECS";
-            break;
-        case -1:
-            str_info = "INVALID";
-            break;       
-        default:
-            break;
-        }
-        ei_list.push_back(str_info);
+
+        auto it = engine_class_map.find(ei->engine.engine_class);
+        if (it == engine_class_map.end())
+            continue;
+        
+        string str_info = engine_class_map[ei->engine.engine_class];
+        str_info += "_" + to_string(ei->engine.engine_instance);
+
+        vector<string> caps;
+        if (ei->capabilities & I915_VIDEO_CLASS_CAPABILITY_HEVC)
+            caps.push_back("HEVC");
+        if (ei->capabilities & I915_VIDEO_AND_ENHANCE_CLASS_CAPABILITY_SFC)
+            caps.push_back("SFC");
+     
+        ei_list[str_info] = caps;
     }
 
     return ei_list;

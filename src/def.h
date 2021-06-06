@@ -55,11 +55,11 @@ static std::map<std::string, int> mapContextParam = {
     {"I915_CONTEXT_PARAM_RECOVERABLE       ", 0x8}, 
 };
 
-static std::map<const char*, int32_t> engine_class_map = 
+static std::map<int32_t, const char*> engine_class_map = 
 {
-    {"RENDER",   0}, 
-    {"BLT",      1}, 
-    {"VCS",      2}, 
-    {"VECS",     3}, 
-    {"INVALID", -1}, 
+    { 0, "RENDER"}, 
+    { 1, "BLT"}, 
+    { 2, "VCS"}, 
+    { 3, "VECS"}, 
+    {-1, "INVALID"}, 
 };
