@@ -96,8 +96,10 @@ map<string, vector<string>> drmQueryEngineInfo()
         if (it == engine_class_map.end())
             continue;
         
+        char idx[16] = {};
+        sprintf(idx, "%02d", ei->engine.engine_instance);
         string str_info = engine_class_map[ei->engine.engine_class];
-        str_info += "_" + to_string(ei->engine.engine_instance);
+        str_info += "_" + string(idx); //to_string(ei->engine.engine_instance);
 
         vector<string> caps;
         if (ei->capabilities & 0x1)
@@ -115,10 +117,10 @@ map<string, vector<string>> drmQueryEngineInfo()
             default:
                 break;
             }
-        if (ei->capabilities & 0x2)
-            caps.push_back("SFC");
         if (ei->capabilities & 0x4)
             caps.push_back("VDENC");
+        if (ei->capabilities & 0x2)
+            caps.push_back("SFC");
         ei_list[str_info] = caps;
     }
 

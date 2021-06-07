@@ -4,7 +4,8 @@ import pydrm
 
 pydrm.open()
 engines = pydrm.query_engine()
-print(engines)
+for e in engines:
+    print(e, engines[e])
 pydrm.close()
 
 print('done')

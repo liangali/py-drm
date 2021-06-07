@@ -61,5 +61,6 @@ static std::map<int32_t, const char*> engine_class_map =
     { 1, "BLT"}, 
     { 2, "VCS"}, 
     { 3, "VECS"}, 
+    { 4, "CCS"}, 
     {-1, "INVALID"}, 
 };
