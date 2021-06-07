@@ -100,11 +100,25 @@ map<string, vector<string>> drmQueryEngineInfo()
         str_info += "_" + to_string(ei->engine.engine_instance);
 
         vector<string> caps;
-        if (ei->capabilities & I915_VIDEO_CLASS_CAPABILITY_HEVC)
-            caps.push_back("HEVC");
-        if (ei->capabilities & I915_VIDEO_AND_ENHANCE_CLASS_CAPABILITY_SFC)
+        if (ei->capabilities & 0x1)
+            switch (ei->engine.engine_class)
+            {
+            case 0:
+                caps.push_back("3D");
+                break;
+            case 1:
+                caps.push_back("BLOCK_COPY");
+                break;
+            case 2:
+                caps.push_back("HEVC");
+                break;
+            default:
+                break;
+            }
+        if (ei->capabilities & 0x2)
             caps.push_back("SFC");
-     
+        if (ei->capabilities & 0x4)
+            caps.push_back("VDENC");
         ei_list[str_info] = caps;
     }
 
